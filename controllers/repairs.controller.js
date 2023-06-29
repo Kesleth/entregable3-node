@@ -1,7 +1,6 @@
 const RepairsModel = require('../models/repairs.models');
 const catchAsync = require('../util/catchAsync');
 const UsersModel = require('../models/users.model');
-const { Result } = require('express-validator');
 
 exports.findByRepairs = catchAsync(async (req, res, next) => {
   const repairs = await RepairsModel.findAll({

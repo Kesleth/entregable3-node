@@ -7,7 +7,7 @@ const db = new Sequelize({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   port: process.env.DB_PORT,
-  logging: process.env.DB_LOGGING === "true", // Parsea el valor a booleano
+  logging: process.env.DB_LOGGING === "true", 
 });
 
 module.exports = { db };

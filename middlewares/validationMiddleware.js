@@ -1,5 +1,5 @@
 const { body, validationResult } = require('express-validator');
-const validFields = (req, res, next) => {
+const validateFields = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -9,44 +9,60 @@ const validFields = (req, res, next) => {
   }
   next();
 };
-exports.createUserValidation = [
-  body('name').notEmpty().withMessage('Name cannot be empty'),
-  body('email')
-    .notEmpty()
-    .withMessage('Email cannot be empty')
-    .isEmail()
-    .withMessage('Must be a valid email'),
-  body('password')
-    .notEmpty()
-    .withMessage('Password cannot be empty')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters'),
-  validFields,
-];
-exports.loginUserValidation = [
-  body('email')
-    .notEmpty()
-    .withMessage('Email cannot be empty')
-    .isEmail()
-    .withMessage('Must be a valid email'),
-  body('password')
-    .notEmpty()
-    .withMessage('Password cannot be empty')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters'),
-  validFields,
-];
-exports.createRepairValidation = [
+
+exports.reparisValidations = [
   body('date')
     .notEmpty()
-    .withMessage('Date cannot be empty')
+    .withMessage('date can not be empty')
     .isDate()
-    .withMessage('This field must be a date'),
+    .withMessage('invalid format')
+    .isAfter(new Date().toISOString())
+    .withMessage('The date must be after the current date.'),
   body('motorsNumber')
     .notEmpty()
-    .withMessage('Motors Number cannot be empty')
+    .withMessage('motorsNumber is mandatory')
+    .isLength({ min: 8 })
+    .withMessage('motorsNumber must be 8 at least 8 characters long'),
+  body('description').notEmpty().withMessage('description can not be empty'),
+  validateFields,
+];
+
+exports.userValidation = [
+  body('name').notEmpty().withMessage('name can not be empty'),
+  body('email')
+    .notEmpty()
+    .withMessage('email is required')
+    .normalizeEmail()
+    .isEmail()
+    .withMessage('The provided email is invalid'),
+  body('password')
+    .notEmpty()
+    .withMessage('password can not be empty')
     .isLength({ min: 6 })
-    .withMessage('Motors Number must be at least 6 characters'),
-  body('description').notEmpty().withMessage('Description cannot be empty'),
-  validFields,
+    .withMessage('The password must be at least 6 characters'),
+  validateFields,
+];
+exports.validLogin = [
+  body('email')
+    .notEmpty()
+    .withMessage('email cannot be empty')
+    .normalizeEmail()
+    .isEmail()
+    .withMessage('The provided email is invalid'),
+  body('password')
+    .notEmpty()
+    .withMessage('password cannot be empty')
+    .isLength({ min: 6 })
+    .withMessage('The password must be at least 6 characters'),
+  validateFields,
+];
+exports.validUpdate = [
+  body('email')
+    .notEmpty()
+    .withMessage('email cannot be empty')
+    .normalizeEmail()
+    .isEmail()
+    .withMessage('The provided email is invalid'),
+  body('name').notEmpty().withMessage('name cannot be empty'),
+  validateFields,
 ];

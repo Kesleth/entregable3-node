@@ -1,15 +1,17 @@
-const errorApp = require('../util/errorApp');
+const ErrorApp = require('../util/errorApp');
 const logger = require('../util/logger');
-const handleCastError23505 = () =>
-  new errorApp('Duplicate field value: please use another value', 400);
+const handleCastError23505 = () => {
+  return new ErrorApp('Duplicate field value: please use another value', 400);
+};
 const handleJWTExpiredError = () => {
-  return new errorApp('Your token has expired! Please log in again', 401);
+  return new ErrorApp('Your token has expired! Please log in again', 401);
 };
 const handleJWTError = () => {
-  return new errorApp('Invalid token. Please log in again', 401);
+  return new ErrorApp('Invalid token. Please log in again', 401);
 };
 const sendErrorDev = (err, res) => {
-  logger.info(err);
+  // logger.info(err);
+  console.log(err);
   return res.status(err.statusCode).json({
     status: err.status,
     error: err,

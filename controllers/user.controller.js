@@ -1,8 +1,9 @@
 const catchAsync = require('../util/catchAsync');
-const errorApp = require('../util/errorApp');
+const ErrorApp = require('../util/errorApp');
 const { generateJWT } = require('../util/JWT');
 const UsersModel = require('./../models/users.model');
 const bcrypt = require('bcryptjs');
+
 exports.findByUsers = catchAsync(async (req, res, next) => {
   const users = await UsersModel.findAll({
     where: {
@@ -27,7 +28,7 @@ exports.createByUser = catchAsync(async (req, res, next) => {
     },
   });
   if (findUser) {
-    return res.status(500).json({
+    return res.status(409).json({
       message: `the user ${email} already exist`,
       status: 'error',
     });
@@ -65,13 +66,30 @@ exports.findAUser = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateAUser = catchAsync(async (req, res, next) => {
+exports.updateUser = catchAsync(async (req, res, next) => {
   const { user } = req;
   const { name, email } = req.body;
-  await user.update({ name, email });
+
+  // if (!name || !email) {
+  //   return res.status(400).json({
+  //     status: 'error',
+  //     message: 'Name and email are required fields.',
+  //   });
+  // }
+
+  // if (!email.includes('@') || !email.includes('.', email.indexOf('@'))) {
+  //   return res.status(400).json({
+  //     status: 'error',
+  //     message: 'Invalid email format.',
+  //   });
+  // }
+
+  const UserOne = await user.update({ name, email });
+
   return res.status(200).json({
     status: 'success',
     message: `Update successful for user with email ${email} 🎉`,
+    UserOne,
   });
 });
 
@@ -93,13 +111,13 @@ exports.loginAUser = catchAsync(async (req, res, next) => {
     },
   });
 
-  if (!user) return next(new AppError('user does not exits', 404));
+  if (!user) return next(new ErrorApp('user does not exits', 404));
 
   if (!(await bcrypt.compare(password, user.password))) {
-    return next(new errorApp('Invalid password', 401));
+    return next(new ErrorApp('Invalid password', 401));
   }
 
-  const token = await JWT(user.id);
+  const token = await generateJWT(user.id);
 
   return res.status(200).json({
     status: 'success',
